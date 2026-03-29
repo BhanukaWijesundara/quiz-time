@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Quiz Time | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container auth-container">
+  <h1 class="site-title">Quiz Time</h1>
+  <h2>Login</h2>
+  <p class="page-subtitle">Welcome back. Sign in to continue.</p>
+
+  <div th:if="${param.error}" class="form-message form-message-error" role="alert">
+    Invalid email or password
+  </div>
+
+  <div th:if="${param.logout}" class="form-message form-message-success" role="alert">
+    You have been logged out successfully
+  </div>
+
+  <form th:action="@{/login}" method="post" class="form-card modern-form" style="margin-top:20px;">
+    <div class="floating-field">
+      <input type="text" name="username" placeholder=" " required class="form-control" autocomplete="username" />
+      <label>Email</label>
+    </div>
+    <div class="floating-field">
+      <input type="password" name="password" placeholder=" " required class="form-control" autocomplete="current-password" />
+      <label>Password</label>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Login</button>
+      <a th:href="@{/register}" class="btn btn-secondary">Create Account</a>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

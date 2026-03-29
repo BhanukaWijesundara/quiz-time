@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: div"></div>
+
+<div class="container dashboard-container">
+    <div class="dashboard-layout">
+        <aside class="dashboard-sidebar" aria-label="Sidebar Navigation">
+            <div class="sidebar-brand">Quiz Time</div>
+
+            <nav class="sidebar-nav">
+                <a th:href="@{/student/dashboard}"
+                   class="sidebar-link"
+                   id="nav-student-dashboard">
+                    <span class="sidebar-link-label">Dashboard</span>
+                </a>
+
+                <a th:href="@{/student/quizzes}"
+                   class="sidebar-link"
+                   id="nav-student-quizzes">
+                    <span class="sidebar-link-label">Quizzes</span>
+                </a>
+
+                <a th:href="@{/student/history}"
+                   class="sidebar-link"
+                   id="nav-student-history">
+                    <span class="sidebar-link-label">History</span>
+                </a>
+
+                <a th:href="@{/user/profile}"
+                   class="sidebar-link"
+                   id="nav-student-profile">
+                    <span class="sidebar-link-label">Profile</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+            <div class="dashboard-main-header">
+                <div>
+                    <h2>Student Dashboard</h2>
+                    <p style="color:#666;">Welcome to Quiz Time. Use the sidebar to navigate.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="card" style="padding:24px;">
+                    <h3 style="margin-bottom:10px;">Welcome</h3>
+                    <p class="muted-text" style="margin-bottom:20px;">
+                        You can browse available quizzes, check your history, and manage your profile from the sidebar.
+                    </p>
+
+                    <a th:href="@{/student/quizzes}" class="btn btn-primary">Go to Quizzes</a>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const path = window.location.pathname || '';
+        const dashboard = document.getElementById('nav-student-dashboard');
+        const quizzes = document.getElementById('nav-student-quizzes');
+        const history = document.getElementById('nav-student-history');
+        const profile = document.getElementById('nav-student-profile');
+
+        [dashboard, quizzes, history, profile].forEach(el => el && el.classList.remove('active'));
+
+        if (path === '/student/dashboard') {
+            if (dashboard) dashboard.classList.add('active');
+        } else if (path === '/student/quizzes') {
+            if (quizzes) quizzes.classList.add('active');
+        } else if (path === '/student/history') {
+            if (history) history.classList.add('active');
+        } else if (path === '/user/profile') {
+            if (profile) profile.classList.add('active');
+        }
+    });
+</script>
+
+</body>
+</html>

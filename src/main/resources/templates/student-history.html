@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Quiz Time | My History</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: div"></div>
+
+<div class="container">
+  <div class="top-bar">
+    <div>
+      <h2>My Quiz History</h2>
+      <p class="muted-text">View all your previous quiz attempts</p>
+    </div>
+    <a th:href="@{/student/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+  </div>
+
+  <div th:if="${#lists.isEmpty(submissions)}" class="card" style="margin-top: 20px;">
+    <p>No quiz submissions found yet.</p>
+  </div>
+
+  <div th:if="${!#lists.isEmpty(submissions)}" class="table-wrapper">
+    <table>
+      <thead>
+      <tr>
+        <th>Quiz Title</th>
+        <th>Score</th>
+        <th>Total</th>
+        <th>Submitted At</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="submission : ${submissions}">
+        <td th:text="${submission.quiz.title}"></td>
+        <td th:text="${submission.score}"></td>
+        <td th:text="${submission.totalQuestions}"></td>
+        <td th:text="${submission.submittedAt}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

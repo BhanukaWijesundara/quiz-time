@@ -1,0 +1,23 @@
+<div th:fragment="div">
+    <nav class="navbar" aria-label="Top navigation">
+        <div class="navbar-left">
+            <span class="navbar-appname">Quiz Time</span>
+        </div>
+
+        <div class="navbar-center"></div>
+
+        <div class="navbar-right">
+            <span class="navbar-user"
+                  th:text="${#authentication?.name != null ? #authentication.name : 'Guest'}">Guest</span>
+
+            <form th:action="@{/logout}" method="post" class="navbar-logout-form">
+                <button type="submit" class="btn btn-danger navbar-logout">Logout</button>
+            </form>
+        </div>
+
+        <button class="navbar-toggle" type="button" aria-label="Toggle navigation"
+                onclick="document.body.classList.toggle('navbar-open')">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+</div>

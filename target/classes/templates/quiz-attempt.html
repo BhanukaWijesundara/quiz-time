@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quiz Time | Attempt Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: div"></div>
+
+<div class="container" style="max-width: 900px; margin-top: 30px;">
+
+    <div class="top-bar" style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <h2>Quiz Attempt</h2>
+            <p class="page-subtitle">Answer all questions and submit your quiz.</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:18px;">
+            <div id="timerBox" style="background:#232946; color:#fff; border-radius:8px; padding:8px 18px; font-size:1.2rem; font-family:monospace; font-weight:600;">
+                <span>Time Left: </span>
+                <span id="timerDisplay" th:text="${duration != null ? duration + ':00' : '10:00'}">10:00</span>
+            </div>
+            <a th:href="@{/student/dashboard}" class="btn btn-secondary">Back</a>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(questions)}" class="card" style="margin-top:20px; padding:20px;">
+        <p>No questions available for this quiz yet.</p>
+    </div>
+
+    <form th:if="${!#lists.isEmpty(questions)}"
+          id="quizForm"
+          th:action="@{/student/quiz/{quizId}/submit(quizId=${quizId})}"
+          method="post"
+          style="margin-top:20px;">
+
+        <!-- Hidden values for timer JS -->
+        <input type="hidden" id="quizId" th:value="${quizId}">
+        <input type="hidden" id="quizDuration" th:value="${duration != null ? duration : 10}">
+
+        <div th:each="question, iterStat : ${questions}" class="question-box quiz-question"
+             style="margin-bottom:20px; padding:20px; border:1px solid #ddd; border-radius:10px;">
+
+            <div class="quiz-title" style="font-size:18px; font-weight:600;">
+                Question <span th:text="${iterStat.index + 1}"></span>
+            </div>
+
+            <p style="margin-top: 10px; margin-bottom: 16px; font-weight: 500;"
+               th:text="${question.questionText}"></p>
+
+            <div class="options-container">
+                <div class="option" style="margin-bottom:10px;">
+                    <label>
+                        <input type="checkbox"
+                               th:name="'answers[' + ${question.id} + ']'"
+                               value="A">
+                        <span th:text="${question.optionA}"></span>
+                    </label>
+                </div>
+
+                <div class="option" style="margin-bottom:10px;">
+                    <label>
+                        <input type="checkbox"
+                               th:name="'answers[' + ${question.id} + ']'"
+                               value="B">
+                        <span th:text="${question.optionB}"></span>
+                    </label>
+                </div>
+
+                <div class="option" style="margin-bottom:10px;">
+                    <label>
+                        <input type="checkbox"
+                               th:name="'answers[' + ${question.id} + ']'"
+                               value="C">
+                        <span th:text="${question.optionC}"></span>
+                    </label>
+                </div>
+
+                <div class="option" style="margin-bottom:10px;">
+                    <label>
+                        <input type="checkbox"
+                               th:name="'answers[' + ${question.id} + ']'"
+                               value="D">
+                        <span th:text="${question.optionD}"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions" style="display:flex; gap:10px; margin-top:20px;">
+            <button type="submit" class="btn btn-primary">Submit Quiz</button>
+            <a th:href="@{/student/dashboard}" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    (function() {
+        if (window.history && window.history.pushState) {
+            window.history.pushState(null, '', window.location.href);
+            window.history.replaceState(null, '', window.location.href);
+
+            let block = true;
+
+            window.addEventListener('popstate', function() {
+                if (block) {
+                    window.location.href = '/login';
+                }
+            });
+
+            window.addEventListener('beforeunload', function(e) {
+                if (block) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+
+            var quizForm = document.getElementById('quizForm');
+            if (quizForm) {
+                quizForm.addEventListener('submit', function() {
+                    block = false;
+                });
+            }
+        }
+
+        var style = document.createElement('style');
+        style.innerHTML = '[data-back-button], .back-button, .btn-back, .fa-arrow-left { display: none !important; }';
+        document.head.appendChild(style);
+    })();
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var timerDisplay = document.getElementById('timerDisplay');
+        var quizForm = document.getElementById('quizForm');
+        var quizIdInput = document.getElementById('quizId');
+        var durationInput = document.getElementById('quizDuration');
+
+        if (!timerDisplay || !quizForm || !quizIdInput || !durationInput) {
+            console.log('Timer setup failed: missing required elements.');
+            return;
+        }
+
+        var quizId = quizIdInput.value;
+        var duration = parseInt(durationInput.value, 10);
+
+        if (isNaN(duration) || duration <= 0) {
+            duration = 10;
+        }
+
+        var storageKey = 'quiz_state_' + quizId;
+        var totalSeconds = duration * 60;
+
+        var savedState = sessionStorage.getItem(storageKey);
+        if (savedState) {
+            try {
+                var parsed = JSON.parse(savedState);
+
+                if (parsed.remaining && parsed.remaining > 0) {
+                    totalSeconds = parsed.remaining;
+                }
+
+                if (parsed.answers) {
+                    Object.keys(parsed.answers).forEach(function(name) {
+                        parsed.answers[name].forEach(function(val) {
+                            var input = document.querySelector('input[name="' + name + '"][value="' + val + '"]');
+                            if (input) {
+                                input.checked = true;
+                            }
+                        });
+                    });
+                }
+            } catch (e) {
+                console.log('Failed to restore quiz state:', e);
+            }
+        }
+
+        function updateTimerDisplay() {
+            var m = Math.floor(totalSeconds / 60);
+            var s = totalSeconds % 60;
+            timerDisplay.textContent =
+                (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+        }
+
+        function saveState() {
+            var answers = {};
+
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(function(input) {
+                if (!answers[input.name]) {
+                    answers[input.name] = [];
+                }
+                answers[input.name].push(input.value);
+            });
+
+            sessionStorage.setItem(storageKey, JSON.stringify({
+                remaining: totalSeconds,
+                answers: answers
+            }));
+        }
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(function(input) {
+            input.addEventListener('change', saveState);
+        });
+
+        updateTimerDisplay();
+
+        var timerInterval = setInterval(function () {
+            if (totalSeconds <= 0) {
+                clearInterval(timerInterval);
+                timerDisplay.textContent = '00:00';
+                sessionStorage.removeItem(storageKey);
+                quizForm.submit();
+                return;
+            }
+
+            totalSeconds--;
+            updateTimerDisplay();
+            saveState();
+        }, 1000);
+
+        quizForm.addEventListener('submit', function() {
+            sessionStorage.removeItem(storageKey);
+        });
+    });
+</script>
+
+</body>
+</html>

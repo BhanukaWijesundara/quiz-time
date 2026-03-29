@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quiz Time | Create Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: div"></div>
+
+<div class="container auth-container">
+    <div class="top-bar">
+        <div>
+            <h2>Create Quiz</h2>
+            <p class="page-subtitle">Create a new quiz for students.</p>
+        </div>
+        <a th:href="@{/admin/dashboard}" class="btn btn-secondary">Back</a>
+    </div>
+
+    <form th:action="@{/admin/quiz/create}" method="post" class="form-card modern-form" style="margin-top:20px;">
+        <div class="form-grid form-grid-2">
+            <div class="floating-field">
+                <input type="text" name="title" placeholder=" " required class="form-control" />
+                <label>Quiz Title</label>
+            </div>
+            <div class="floating-field">
+                <input type="number" name="duration" min="1" max="180" placeholder=" " required class="form-control" />
+                <label>Duration (minutes)</label>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create Quiz</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

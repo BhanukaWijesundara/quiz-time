@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div th:replace="fragments/header :: div"></div>
+
+<div class="container dashboard-container">
+    <div class="dashboard-layout">
+        <aside class="dashboard-sidebar" aria-label="Sidebar Navigation">
+            <div class="sidebar-brand">Quiz Time</div>
+
+            <nav class="sidebar-nav">
+                <a th:href="@{/admin/dashboard}"
+                   class="sidebar-link"
+                   id="nav-admin-dashboard">
+                    <span class="sidebar-link-label">Dashboard</span>
+                </a>
+
+                <a th:href="@{/admin/manage-quizzes}"
+                   class="sidebar-link"
+                   id="nav-admin-manage-quizzes">
+                    <span class="sidebar-link-label">Manage Quizzes</span>
+                </a>
+
+                <a th:href="@{/admin/quiz/create}"
+                   class="sidebar-link"
+                   id="nav-admin-create-quiz">
+                    <span class="sidebar-link-label">Create Quiz</span>
+                </a>
+
+                <a th:if="${quizzes != null and !quizzes.isEmpty()}"
+                   th:href="@{/admin/quiz/{id}/submissions(id=${quizzes[0].id})}"
+                   class="sidebar-link"
+                   id="nav-admin-submissions">
+                    <span class="sidebar-link-label">Submissions</span>
+                </a>
+
+                <span th:if="${quizzes == null or quizzes.isEmpty()}"
+                      class="sidebar-link sidebar-link-disabled"
+                      id="nav-admin-submissions">
+                    <span class="sidebar-link-label">Submissions</span>
+                </span>
+
+                <a th:href="@{/admin/departments}"
+                   class="sidebar-link"
+                   id="nav-admin-departments">
+                    <span class="sidebar-link-label">Departments</span>
+                </a>
+
+                <a th:href="@{/admin/profile}"
+                   class="sidebar-link"
+                   id="nav-admin-profile">
+                    <span class="sidebar-link-label">Profile</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+            <div class="dashboard-main-header">
+                <div>
+                    <h2>Admin Dashboard</h2>
+                    <p style="margin-top:8px; color:#666;">Welcome to the admin panel. Use the sidebar to manage quizzes, departments, and view submissions.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="card" style="padding:24px;">
+                    <h3 style="margin-bottom:10px;">Welcome</h3>
+                    <p class="muted-text" style="margin-bottom:20px;">
+                        You can manage quizzes, create new quizzes, manage departments, review submissions, and manage your profile from the sidebar.
+                    </p>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <a th:href="@{/admin/manage-quizzes}" class="btn btn-primary">Go to Manage Quizzes</a>
+                        <a th:href="@{/admin/quiz/create}" class="btn btn-secondary">Create Quiz</a>
+                        <a th:href="@{/admin/departments}" class="btn btn-secondary">Manage Departments</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const path = window.location.pathname || '';
+        const dashboard = document.getElementById('nav-admin-dashboard');
+        const manageQuizzes = document.getElementById('nav-admin-manage-quizzes');
+        const createQuiz = document.getElementById('nav-admin-create-quiz');
+        const submissions = document.getElementById('nav-admin-submissions');
+        const departments = document.getElementById('nav-admin-departments');
+        const profile = document.getElementById('nav-admin-profile');
+
+        [dashboard, manageQuizzes, createQuiz, submissions, departments, profile]
+            .forEach(el => el && el.classList.remove('active'));
+
+        if (path === '/admin/dashboard') {
+            if (dashboard) dashboard.classList.add('active');
+        } else if (path === '/admin/manage-quizzes') {
+            if (manageQuizzes) manageQuizzes.classList.add('active');
+        } else if (path === '/admin/quiz/create') {
+            if (createQuiz) createQuiz.classList.add('active');
+        } else if (path.startsWith('/admin/quiz/') && path.endsWith('/submissions')) {
+            if (submissions) submissions.classList.add('active');
+        } else if (path === '/admin/departments') {
+            if (departments) departments.classList.add('active');
+        } else if (path === '/admin/profile') {
+            if (profile) profile.classList.add('active');
+        }
+    });
+</script>
+
+</body>
+</html>
